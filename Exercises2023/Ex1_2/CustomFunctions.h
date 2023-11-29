@@ -29,7 +29,6 @@ std::string fitStraightLine(const std::vector<Point>& points, const std::vector<
 std::vector<double> calculatePower(const std::vector<Point>& points);
 void saveOutputToFile(const std::string& filename, const std::string& output);
 
-
 // // NOT WORKING!!! Overloaded print function to print either (x, y) values or magnitudes
 // template <typename T>
 // void printValues(const std::vector<T>& values, int n = -1);
