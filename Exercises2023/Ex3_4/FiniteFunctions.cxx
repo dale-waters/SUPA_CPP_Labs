@@ -1,6 +1,15 @@
+// Title: SUPACOO 2023 - Assignment 2
+// Subtitle: FiniteFunctions.cxx
+// Editor: Dale Waters
+// Last edited: 15/12/2023
 
+// Changelog:
 
-// NOTE (13/13/2023): The "Integrate" class method was incomplete. A possible solution has been proposed using the trapezoidal method. - D.Waters
+// 15/12/2023 added "generateRandomNumber", "generateNormalNumber", "computeA" - D.Waters
+
+// 14/12/2023 Added functions "calculateMean" and "calculateStdDev" - D.Waters
+
+// 13/12/2023 The "Integrate" class method was incomplete. A possible solution has been proposed using the trapezoidal method - D.Waters
 
 
 #include <iostream>
@@ -19,6 +28,10 @@ FiniteFunction::FiniteFunction(){
   m_RMax = 5.0;
   this->checkPath("DefaultFunction");
   m_Integral = NULL;
+
+      // Initialize seed randomly
+    std::random_device rd;
+    seed = rd();
 }
 
 //initialised constructor
@@ -27,6 +40,10 @@ FiniteFunction::FiniteFunction(double range_min, double range_max, std::string o
   m_RMax = range_max;
   m_Integral = NULL;
   this->checkPath(outfile); //Use provided string to name output files
+
+      // Initialize seed randomly
+    std::random_device rd;
+    seed = rd();
 }
 
 //Plots are called in the destructor
@@ -58,8 +75,9 @@ double FiniteFunction::rangeMax() {return m_RMax;};
 //Function eval
 ###################
 */ 
-double FiniteFunction::invxsquared(double x) {return 1/(1+x*x);};
-double FiniteFunction::callFunction(double x) {return this->invxsquared(x);}; //(overridable)
+double FiniteFunction::invxsquared(double x) const {return 1/(1+x*x);};
+double FiniteFunction::callFunction(double x) const {return this->invxsquared(x);}; //(overridable)
+
 
 /*
 ###################
@@ -153,6 +171,50 @@ void FiniteFunction::plotData(std::vector<double> &points, int Nbins, bool isdat
   }
 }
 
+/*
+###################
+// ADDED FUNCTIONS
+// 15/12/2023 generateRandomNumber, generateNormalNumber, computeA - D.Waters
+// 14/12/2023 calculateMean and calculateStdDev - D.Waters
+###################
+*/
+
+double FiniteFunction::generateRandomNumber(double rangeMin, double rangeMax) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<double> dis(rangeMin, rangeMax);
+    return dis(gen);
+}
+
+double FiniteFunction::generateNormalNumber(double mean, double stddev) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<double> dis(mean, stddev);
+    return dis(gen);
+}
+
+double FiniteFunction::computeA(double xi, double y) {
+    double f_y = this->callFunction(y);
+    double f_xi = this->callFunction(xi);
+    return std::min(f_y / f_xi, 1.0);
+}
+
+double FiniteFunction::calculateMean(const std::vector<double>& data) {
+    // Mean calculation
+    return std::accumulate(data.begin(), data.end(), 0.0) / data.size();
+}
+
+double FiniteFunction::calculateStdDev(const std::vector<double>& data) {
+    // Standard deviation calculation
+    double mean = calculateMean(data);
+    double sum = 0.0;
+
+    for (double value : data) {
+        sum += pow(value - mean, 2);
+    }
+
+    return sqrt(sum / data.size());
+}
 
 /*
   #######################################################################################################

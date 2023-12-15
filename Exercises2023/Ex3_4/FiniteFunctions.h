@@ -1,6 +1,22 @@
+// Title: SUPACOO 2023 - Assignment 2
+// Subtitle: FiniteFunctions.h
+// Editor: Dale Waters
+// Last edited: 15/12/2023
+
+// Changelog:
+
+// 15/12/2023 added "generateRandomNumber", "generateNormalNumber", "computeA" as public class members - D.Waters
+
+// 15/12/2023 const added to "callFunction" and "invxsquared" - D.Waters
+
+// 14/12/2023 Added functions "calculateMean" and "calculateStdDev" as protected class members - D.Waters
+
 #include <string>
 #include <vector>
 #include "gnuplot-iostream.h"
+#include <cmath>
+#include <numeric> // Added for std::accumulate
+#include <random> // Added 15/12/2023 - D.Waters
 
 #pragma once //Replacement for IFNDEF
 
@@ -41,7 +57,18 @@ public:
   virtual void printInfo(); //Dump parameter info about the current function (Overridable)
   
   // Function Evaluation
-  virtual double callFunction(double x); //Call the function with value x (Overridable)
+  virtual double callFunction(double x) const; //Call the function with value x (Overridable)
+
+  // Functions added 15.12.2023 - D.Waters
+
+    // Function to generate a random number in a given range
+    double generateRandomNumber(double rangeMin, double rangeMax);
+
+    // Function to generate a random number from a normal distribution
+    double generateNormalNumber(double mean, double stddev);
+
+    // Function to compute Metropolis acceptance criterion A
+    double computeA(double xi, double y);
 
   //Protected members can be accessed by child classes but not users
 protected:
@@ -69,9 +96,17 @@ protected:
   void generatePlot(Gnuplot &gp); 
   std::vector< std::pair<double, double> > makeHist(std::vector<double> &points, int Nbins); //Helper function to turn data points into histogram with Nbins
 
+  // Functions added 14.12.2023 - D.Waters
+    double calculateMean(const std::vector<double>& data);
+    double calculateStdDev(const std::vector<double>& data);
+
+
 private:
 
   // Function evalutation
-  double invxsquared(double x); //The default functional form
+  double invxsquared(double x) const; //The default functional form
+
+  // Seed for the random number generator - D.Waters 15/12/2023
+      unsigned int seed; 
 
 };

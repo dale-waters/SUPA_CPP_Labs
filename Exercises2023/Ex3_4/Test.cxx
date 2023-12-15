@@ -1,20 +1,29 @@
 // Title: SUPACOO 2023 - Assignment 2
 // Subtitle: Data Analysis
 // Editor: Dale Waters
-// Last edited: 13/12/2023
+// Last edited: 15/12/2023
 
-// Files submitted for evaluation: 
+// Files submitted for evaluation: Text.cxx, FiniteFunctions.h, FiniteFunctions.cxx, CustomFunctions.h, CustomFunctions.cxx, Makefile
 
-// Problems with code:
+// Steps-to-run
 
-// i). the MysteryData file must be in the same folder as Test.cxx
+// i). Enter "make" into the terminal
+// ii). Enter "./Test" into the terminal
+
+// Troubleshooting
+
+// i). A copy of "MysteryData.txt" must be in the same folder as Test.cxx
+// ii). A copy of "gnuplot-iostream.h" must be in the same folder as FiniteFunctions.h
 
 #include <iostream>
 #include <fstream>
 #include <vector>
 #include "FiniteFunctions.h" // Include the implementation file for the FiniteFunctions
-// #include "gnuplot-iostream.h"
-#include "CustomFunctions.h"
+#include "CustomFunctions.h" // Added 13/12/2023 - D.Waters
+// #include <random> // Added 15/12/2023 - D.Waters
+#include <cstdlib>
+#include <ctime>
+
 
 int main() {
 
@@ -42,21 +51,102 @@ int main() {
     // Set function limits (you can adjust these limits accordingly)
     finiteFunc.setRangeMin(-10.0);
     finiteFunc.setRangeMax(10.0);
-    std::cout << "The upper and lower limits of my function are " << finiteFunc.rangeMin() << " and " << finiteFunc.rangeMax() << " respectively." << std::endl;
+    finiteFunc.setOutfile("DefaultFiniteFunction");
 
-    finiteFunc.plotFunction();
-    finiteFunc.plotData(dataPoints, 100, true); // 100 bins for data points
+    // Print and plot
+    finiteFunc.printInfo();
+    finiteFunc.plotFunction(); // Plot the function
+    finiteFunc.plotData(dataPoints, 100, true); // Plot data points (100 bins for data points)
 
-    // Test Normal Distribution
-    NormalDistribution normalDist;
-    normalDist.setRangeMin(-10.0);
-    normalDist.setRangeMax(10.0);
-    normalDist.setMean(5);
-    normalDist.setStdDev(5);
+    // Create a NormalDistribution object
+    NormalDistribution normalDist(dataPoints); // Pass dataPoints to the constructor
+    
+    // Set funtion limits (you can adjust these limits accordingly)
+    normalDist.setRangeMin(-8.0);
+    normalDist.setRangeMax(7.0);
+    normalDist.setOutfile("NormalDistribution");
 
-    normalDist.integral(1000); // You can adjust the number of divisions
+    // Print and plot
     normalDist.printInfo();
     normalDist.plotFunction();
+    normalDist.plotData(dataPoints, 100, true); // 100 bins for data points
+
+    // Create a CauchyLorentzDistribution object
+    CauchyLorentzDistribution cauchyLorentzDist(dataPoints); // Pass dataPoints to the constructor
+    
+    // Set function limits (you can adjust these limits accordingly)
+    cauchyLorentzDist.setRangeMin(-7.0);
+    cauchyLorentzDist.setRangeMax(7.0);
+    cauchyLorentzDist.setOutfile("CauchyLorentzDistribution");
+
+    // Print and plot
+    cauchyLorentzDist.printInfo();
+    cauchyLorentzDist.plotFunction();
+    cauchyLorentzDist.plotData(dataPoints, 100, true); // 100 bins for data points
+
+  // Create a NegativeCrystalBallDistribution object
+    NegativeCrystalBallDistribution crystalBallDist(dataPoints); // Pass dataPoints to the constructor
+
+    // Set function limits (you can adjust these limits accordingly)
+    crystalBallDist.setRangeMin(-7.0);
+    crystalBallDist.setRangeMax(7.0);
+    crystalBallDist.setOutfile("NegativeCrystalBallDistribution");
+
+    // Fit parameters to best match the data
+    crystalBallDist.setAlpha(1.0); // alpha > 0
+    crystalBallDist.setN(2.0); // n > 1
+
+    // Print and plot
+    crystalBallDist.printInfo();
+    crystalBallDist.plotFunction();
+    crystalBallDist.plotData(dataPoints, 100, true); // 100 bins for data points
+
+/*
+###################
+// 2.1 RNG
+###################
+*/ 
+
+    // Metropolis Algorithm for Sampling
+    int numSamples = 10000;
+    std::vector<double> generatedSamplesX;
+    std::vector<double> generatedSamplesY;
+
+    double currentX = normalDist.generateRandomNumber(normalDist.rangeMin(), normalDist.rangeMax());
+
+    for (int i = 0; i < numSamples; ++i) {
+
+        // Proposal step: Generate a proposal sample from a uniform distribution
+        double proposalX = normalDist.generateRandomNumber(normalDist.rangeMin(), normalDist.rangeMax());
+        
+        // Acceptance ratio
+        double acceptanceRatio = normalDist.callFunction(proposalX) / normalDist.callFunction(currentX);
+
+        // Metropolis acceptance criterion
+        if (acceptanceRatio >= 1.0 || (acceptanceRatio > normalDist.generateRandomNumber(0.0, 1.0))) {
+            currentX = proposalX;
+        }
+
+        // Generate a second random number y from a normal distribution centered on xi
+        double proposalY = normalDist.generateNormalNumber(currentX, 1.0);
+
+        // Acceptance ratio
+        double A = normalDist.computeA(currentX, proposalY);
+
+        // Metropolis acceptance criterion
+        double T = normalDist.generateRandomNumber(0.0, 1.0);
+
+        if (T < A) {
+            currentX = proposalY;
+        }
+
+        // Store the generated samples
+        generatedSamplesX.push_back(currentX);
+
+    }
+
+    // Plot the generated samples
+    normalDist.plotData(generatedSamplesX, 100, false); // 100 bins for generated samples X
 
     return 0;
 }
