@@ -1,3 +1,8 @@
+
+
+// NOTE (13/13/2023): The "Integrate" class method was incomplete. A possible solution has been proposed using the trapezoidal method. - D.Waters
+
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -61,10 +66,34 @@ double FiniteFunction::callFunction(double x) {return this->invxsquared(x);}; //
 Integration by hand (output needed to normalise function when plotting)
 ###################
 */ 
+
+// COMPLETED: ToDo write an integrator
+// Formerly returned -99;
+// SOLUTION: A simple implementation using the trapezoidal rule
 double FiniteFunction::integrate(int Ndiv){ //private
-  //ToDo write an integrator
-  return -99;  
+    if (Ndiv <= 0) {
+        std::cout << "Invalid number of divisions for integral, setting Ndiv to 1000" << std::endl;
+        Ndiv = 1000;
+    }
+
+    // In this implementation:
+
+    // 'h' represents the width of each interval
+    // 'sum' initialises with the average value of the function at the endpoints
+
+    double h = (m_RMax - m_RMin) / Ndiv; // width of each interval
+    double sum = 0.5 * (callFunction(m_RMin) + callFunction(m_RMax)); // sum of endpoints
+
+    // Calculates the sum of function values at intermediate points
+    for (int i = 1; i < Ndiv; ++i) {
+        double x = m_RMin + i * h;
+        sum += callFunction(x);
+    }
+
+    // The result is the sum multiplied by the width of each interval
+    return sum * h;
 }
+
 double FiniteFunction::integral(int Ndiv) { //public
   if (Ndiv <= 0){
     std::cout << "Invalid number of divisions for integral, setting Ndiv to 1000" <<std::endl;
@@ -134,11 +163,14 @@ void FiniteFunction::plotData(std::vector<double> &points, int Nbins, bool isdat
   #######################################################################################################
  */
 
+
 //Scan over range of function using range/Nscan steps (just a hack so we can plot the function)
 std::vector< std::pair<double,double> > FiniteFunction::scanFunction(int Nscan){
   std::vector< std::pair<double,double> > function_scan;
   double step = (m_RMax - m_RMin)/(double)Nscan;
   double x = m_RMin;
+
+
   //We use the integral to normalise the function points
   if (m_Integral == NULL) {
     std::cout << "Integral not set, doing it now" << std::endl;
@@ -150,6 +182,7 @@ std::vector< std::pair<double,double> > FiniteFunction::scanFunction(int Nscan){
     function_scan.push_back( std::make_pair(x,this->callFunction(x)/m_Integral));
     x += step;
   }
+
   return function_scan;
 }
 
@@ -162,7 +195,7 @@ std::vector< std::pair<double,double> > FiniteFunction::makeHist(std::vector<dou
   for (double point : points){
     //Get bin index (starting from 0) the point falls into using point value, range, and Nbins
     int bindex = static_cast<int>(floor((point-m_RMin)/((m_RMax-m_RMin)/(double)Nbins)));
-    if (bindex<0 || bindex>Nbins){
+    if (bindex<0 || bindex>Nbins-1){
       continue;
     }
     bins[bindex]++; //weight of 1 for each data point
