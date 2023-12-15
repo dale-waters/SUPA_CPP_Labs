@@ -3,6 +3,18 @@
 // Editor: Dale Waters
 // Last edited: 15/12/2023
 
+// Changelog:
+
+// 15/12/2023 "const" added to "callFunction" for all classes
+
+// 14/12/2023 CustomFunctions add new classes which inherit from the base FiniteFunction class
+// New classes were added for:
+// 2. The Cauchy-Lorentz distribution - D.Waters
+// 3. The negative Crystal Ball distribution - D.Waters
+
+// 13/12/2023 CustomFunctions add new classes which inherit from the base FiniteFunction class
+// New classes were added for:
+// 1. The normal distribution - D.Waters
 
 #include "CustomFunctions.h"
 #include <cmath>

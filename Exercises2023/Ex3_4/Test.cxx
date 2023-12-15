@@ -1,9 +1,9 @@
 // Title: SUPACOO 2023 - Assignment 2
-// Subtitle: Data Analysis
+// Subtitle: Test.cxx
 // Editor: Dale Waters
 // Last edited: 15/12/2023
 
-// Files submitted for evaluation: Text.cxx, FiniteFunctions.h, FiniteFunctions.cxx, CustomFunctions.h, CustomFunctions.cxx, Makefile
+// Files submitted for evaluation: Text.cxx, FiniteFunctions.h, FiniteFunctions.cxx, CustomFunctions.h, CustomFunctions.cxx, Makefile, estimate_pi.cxx, MysteryData21212.txt
 
 // Steps-to-run
 
@@ -20,9 +20,6 @@
 #include <vector>
 #include "FiniteFunctions.h" // Include the implementation file for the FiniteFunctions
 #include "CustomFunctions.h" // Added 13/12/2023 - D.Waters
-// #include <random> // Added 15/12/2023 - D.Waters
-#include <cstdlib>
-#include <ctime>
 
 
 int main() {
@@ -112,11 +109,13 @@ int main() {
     std::vector<double> generatedSamplesX;
     std::vector<double> generatedSamplesY;
 
+     std::cout << "Generating " << numSamples << " sample points for " << "NormalDistribution" << std::endl;
+
     double currentX = normalDist.generateRandomNumber(normalDist.rangeMin(), normalDist.rangeMax());
 
     for (int i = 0; i < numSamples; ++i) {
 
-        // Proposal step: Generate a proposal sample from a uniform distribution
+        // Generate a proposal sample from a uniform distribution
         double proposalX = normalDist.generateRandomNumber(normalDist.rangeMin(), normalDist.rangeMax());
         
         // Acceptance ratio
